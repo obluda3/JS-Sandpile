@@ -109,11 +109,11 @@ class Tiling{
 	//	the limits of the Tiles (called the WireFrame).
 	//
 	// ------------------------------------------------
-	constructor(tiles, hide=false, recenter=false){
+	constructor(tiles, hide=false, recenter=false, rule=new SandpileRule()){
 		
 		this.tiles = tiles;
-		this.rule = new SandpileRule();
 		this.hide = hide;
+		this.rule = rule;
 		
 		if(!hide){
 			

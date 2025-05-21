@@ -507,14 +507,13 @@ function drawTiling(){
 	var subneighborhood = document.getElementById("subneighborhood").valueAsNumber;
         // the most important...
 	preset = document.getElementById("TilingSelect").value;
-
         // prepare command and call the tiling generator
 	var command = "currentTiling = Tiling." + preset + "({height:cH, width:cW, iterations:nbIt, size:size, order:order, cropMethod:cropMethod, kwidth:kwidth, knotchA:knotchA, knotchB:knotchB, knotchN:knotchN, lineplace:lineplace, linespace:linespace, kposi:kposi, kposlist:kposlist, roundedcorners:roundedcorners, subneighborhood:subneighborhood})";
         console.log("BEGIN construct a new Tiling");
 	eval(command);
         console.log("END construct a new Tiling");
         console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles");
-	
+	updateRule();
         // save color map
 	currentTiling.cmap = cmap;
 	
@@ -581,6 +580,19 @@ function redraw(){
 		app.renderer.render( app.scene, app.camera );
 	};
 	render();
+}
+
+
+// ################################################
+//
+// 	[ 4.6 ]		Update game rule accordingly
+//
+// ################################################
+
+function updateRule() {
+	rule = document.getElementById("cellularAutomaton").value;
+	if (currentTiling)
+		eval("currentTiling.rule = new " + rule + "()");
 }
 
 // ################################################

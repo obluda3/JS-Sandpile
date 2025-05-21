@@ -260,6 +260,14 @@
 			</div>
 		</div> <!-- Mouse controls -->
 
+		<!-- ############################################################ Cellular Automaton Controls -->
+		 <div id="cell controls" class="controlGroup">
+			<p class="groupTitle">Cellular automaton mode</p>
+			<select id="cellularAutomaton" onchange="updateRule()">
+				<option value="SandpileRule">Sandpile</option>
+				<option value="HexLifeRule">Hex GoL</option>
+			</select>
+		 </div>
 		<!-- ############################################################ Operations / Secondary Controls -->
 		<div id="secondary controls" class="controlGroup">
 			<p class="groupTitle">Sandpile operations</p>
