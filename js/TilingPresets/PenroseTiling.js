@@ -1097,7 +1097,7 @@ makePenroseSandpile = function(data){
 
         var tile = new Tile(id, neighbors, bounds, 3);
         
-        tile.sand = s;
+        tile.state = s;
 
         tils.push(tile);
 
@@ -1338,7 +1338,7 @@ makeKDPenroseSandpile = function(data){
 
         var tile = new Tile(id, neighbors, bounds, 4);
         
-        tile.sand = s;
+        tile.state = s;
 
         tils.push(tile);
 

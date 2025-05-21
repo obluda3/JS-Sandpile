@@ -154,7 +154,7 @@ function cut_big(tile){
 	
 	//id, neightbors, bounds, limit
 	var tile0 = new Tile(tile.id.concat([0, 'b']), [], bounds0, 3);
-	tile0.sand = 5;
+	tile0.state = 5;
 	
 	var bounds1 = [];
 	bounds1.push(tile.bounds[2*2], tile.bounds[2*2 + 1]);
@@ -196,7 +196,7 @@ function cut_small(tile){
 	bounds2.push(right_x, right_y);
 	//id, neightbors, bounds, limit
 	var tile2 = new Tile(tile.id.concat([2, 'b']), [], bounds2, 3);
-	tile2.sand = 5;
+	tile2.state = 5;
 	
 	return [tile0, tile1, tile2];
 

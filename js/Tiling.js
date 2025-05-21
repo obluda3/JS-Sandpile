@@ -22,10 +22,10 @@ class Tile{
 		this.neighbors = neighbors; // ids of adjacent tiles
 
 		this.limit = limit; // topples when sand >= limit
-		this.sand = 0; // sand content
+		this.state = 0; // sand content
 		if(limit < 0)
-			this.sand = -1;
-		this.prevSand = 0; // "trick" variable to iterate the sand
+			this.state = -1;
+		this.prevState = 0; // "trick" variable to iterate the sand
 
 		this.bounds = bounds; // vertices of the polygon to be drawn
 		this.points = [];
@@ -112,7 +112,7 @@ class Tiling{
 	constructor(tiles, hide=false, recenter=false){
 		
 		this.tiles = tiles;
-		
+		this.rule = new SandpileRule();
 		this.hide = hide;
 		
 		if(!hide){
@@ -251,24 +251,17 @@ class Tiling{
 	}
 
 	// ------------------------------------------------
-	// 	[ 2.2 ] 	Apply sandpile steps
+	// 	[ 2.2 ] 	Apply iteration rule
 	// ------------------------------------------------
 	iterate(){
-		// Topple any tile that has more than the limit of sand
 		var is_stable = true;
-		for(var i=0; i<this.tiles.length; i++){
-			this.tiles[i].prevSand = this.tiles[i].sand;
-		}
-		for(var i=0; i<this.tiles.length; i++){
-			var til = this.tiles[i];
-			if(til.prevSand >= til.limit){
-				til.sand -= til.limit;
-				for(var j = 0; j< til.neighbors.length; j++){
-					this.tiles[til.neighbors[j]].sand += 1;
-				}
+		for(var i=0; i<this.tiles.length; i++)
+			this.tiles[i].prevState = this.tiles[i].state;
+		
+		for(var i=0; i<this.tiles.length; i++)
+			if (this.rule.iterate(this.tiles[i], this.tiles[i].neighbors.map(x => this.tiles[x])))
 				is_stable = false;
-			}
-		}
+		
 		return is_stable;
 	}
 	
@@ -289,18 +282,18 @@ class Tiling{
 	// 	[ 2.3 ] 	Basic operation functions
 	// ------------------------------------------------
 	add(id, amount){
-		this.tiles[id].sand += amount;
+		this.tiles[id].state += amount;
 		this.colorTile(id);
 	}
 	
 	set(id, amount){
-		this.tiles[id].sand = amount;
+		this.tiles[id].state = amount;
 		this.colorTile(id);
 	}
 	
 	remove(id, amount){
-		this.tiles[id].sand -= amount;
-		if(this.tiles[id].sand < 0) this.tiles[id].sand = 0;
+		this.tiles[id].state -= amount;
+		if(this.tiles[id].state < 0) this.tiles[id].state = 0;
 		this.colorTile(id);
 	}
 	
@@ -324,14 +317,14 @@ class Tiling{
 	// ------------------------------------------------
 	clear(){
 		for(var id in this.tiles){
-			this.tiles[id].sand = 0;
+			this.tiles[id].state = 0;
 		}
 		this.colorTiles();
 	}
 
 	addEverywhere(amount){
 		for(var id in this.tiles){
-			this.tiles[id].sand += amount;
+			this.tiles[id].state += amount;
 		}
 		this.colorTiles();
 	}
@@ -346,7 +339,7 @@ class Tiling{
 	addRandomEverywhere(amount){
 		for(var j = 0; j<amount; j++){
 			for(var id in this.tiles){
-				if(Math.random() > 0.5) this.tiles[id].sand += 1;
+				if(Math.random() > 0.5) this.tiles[id].state += 1;
 			}
 		}
 		this.colorTiles();
@@ -354,8 +347,8 @@ class Tiling{
 
 	removeEverywhere(amount){
 		for(var id in this.tiles){
-			this.tiles[id].sand -= amount;
-			if(this.tiles[id].sand < 0) this.tiles[id].sand = 0;
+			this.tiles[id].state -= amount;
+			if(this.tiles[id].state < 0) this.tiles[id].state = 0;
 		}
 		this.colorTiles();
 	}
@@ -368,7 +361,7 @@ class Tiling{
 	addConfiguration(otherTiling,n=1){
 		if(otherTiling.tiles.length != this.tiles.length) alert("Can't add configurations ! Different number of tiles.");
 		for(var i = 0; i<this.tiles.length; i++){
-			this.tiles[i].sand += n*otherTiling.tiles[i].sand;
+			this.tiles[i].state += n*otherTiling.tiles[i].state;
 		}
 		this.colorTiles();
 	}
@@ -376,8 +369,8 @@ class Tiling{
 	removeConfiguration(otherTiling){
 		if(otherTiling.tiles.length != this.tiles.length) alert("Can't add configurations ! Different number of tiles.");
 		for(var i = 0; i<this.tiles.length; i++){
-			this.tiles[i].sand -= otherTiling.tiles[i].sand;
-			if(this.tiles[i].sand < 0) this.tiles[i].sand = 0;
+			this.tiles[i].state -= otherTiling.tiles[i].state;
+			if(this.tiles[i].state < 0) this.tiles[i].state = 0;
 		}
 		this.colorTiles();
 	}
@@ -385,7 +378,7 @@ class Tiling{
 	getHiddenDual(){
 		var newTiling = this.hiddenCopy();
 		for(var i = 0; i<newTiling.tiles.length; i++){
-			newTiling.tiles[i].sand = Math.max(0, this.tiles[i].limit - 1 - this.tiles[i].sand);
+			newTiling.tiles[i].state = Math.max(0, this.tiles[i].limit - 1 - this.tiles[i].state);
 		}
 		return newTiling;
 	}
@@ -397,7 +390,7 @@ class Tiling{
 		}
 		var newTiling = new Tiling(newTiles, true);
 		for(var i = 0; i<this.tiles.length; i++){
-			newTiling.tiles[i].sand = new Number(this.tiles[i].sand);
+			newTiling.tiles[i].state = new Number(this.tiles[i].state);
 		}
 		return newTiling;
 	}
@@ -408,7 +401,7 @@ class Tiling{
 	colorTile(id, color){
 		// Colors only one tile according to this.cmap
 		var tile = this.tiles[id];
-		var colorNum = tile.sand;
+		var colorNum = tile.state;
 		if(colorNum >= this.cmap.length){
 			colorNum = this.cmap.length-1;
 		}
@@ -419,14 +412,14 @@ class Tiling{
 			} else{
 				// default
 				
-				if(tile.sand >= tile.limit){
+				if(tile.state >= tile.limit){
 					// ready to topple - flashy colors
 					var flashy = ["#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66", "#44ff11", "#22ffaa", "#00ffff", "#0077ff",  "#0000ff"];
-					var flashyIndex = Math.min(tile.sand-tile.limit, flashy.length-1);
+					var flashyIndex = Math.min(tile.state-tile.limit, flashy.length-1);
 					color = new THREE.Color(flashy[flashyIndex]);
 				} else {
 					// stable, grey
-					var greyScale = 1.0 - tile.sand / tile.limit;
+					var greyScale = 1.0 - tile.state / tile.limit;
 					color = new THREE.Color( greyScale, greyScale, greyScale );
 					
 				}
@@ -454,7 +447,7 @@ class Tiling{
 	// ------------------------------------------------
         get_maxStable(){
                 let max_stable = this.hiddenCopy();
-                max_stable.tiles.forEach(tile => tile.sand = tile.limit-1);
+                max_stable.tiles.forEach(tile => tile.state = tile.limit-1);
                 return max_stable;
         }
 
@@ -519,7 +512,7 @@ class Tiling{
                 console.log("compute burning b...");
                 let burning = this.hiddenCopy();
                 burning.tiles.forEach(tile =>
-                  tile.sand = tile.limit - tile.neighbors.length
+                  tile.state = tile.limit - tile.neighbors.length
                 );
                 console.log("done");
                 return burning;

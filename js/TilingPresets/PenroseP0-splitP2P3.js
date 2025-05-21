@@ -83,7 +83,7 @@ function P0decorate(tiles){
   console.log("* decorate tiles");
   tiles.forEach(tile => {
     if(tile.id[0]=="thin"){
-      tile.sand=1;
+      tile.state=1;
     }
   });
 }
@@ -366,7 +366,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
     // * id[len-1] gives the triangle type (1 or 2)
     switch(tile.id[0]+tile.id.slice(-1)[0]){
       case "fat1":
-        tile.sand = 5; // deco
+        tile.state = 5; // deco
         Ax=tile.bounds[4];
         Ay=tile.bounds[5];
         Bx=tile.bounds[0];
@@ -382,7 +382,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
         }
         break;
       case "fat2":
-        tile.sand = 4; // deco
+        tile.state = 4; // deco
         Ax=tile.bounds[0];
         Ay=tile.bounds[1];
         Bx=tile.bounds[4];
@@ -398,7 +398,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
         }
         break;
       case "thin1": // kevin: is my thin2
-        tile.sand = 7; // deco
+        tile.state = 7; // deco
         Ax=tile.bounds[0];
         Ay=tile.bounds[1];
         Bx=tile.bounds[4];
@@ -414,7 +414,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
         }
         break;
       case "thin2": // kevin: is my thin1
-        tile.sand = 8; // deco
+        tile.state = 8; // deco
         Ax=tile.bounds[4];
         Ay=tile.bounds[5];
         Bx=tile.bounds[0];
@@ -446,7 +446,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
     switch(tile.id[0]+tile.id.slice(-1)[0]){
       case "[0,4]1":
         // fat 1
-        tile.sand = 5;
+        tile.state = 5;
         Ax=tile.bounds[4];
         Ay=tile.bounds[5];
         Bx=tile.bounds[0];
@@ -460,7 +460,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
       case "[2,3]2":
       case "[3,4]2":
         // fat 1
-        tile.sand = 5;
+        tile.state = 5;
         Ax=tile.bounds[0];
         Ay=tile.bounds[1];
         Bx=tile.bounds[4];
@@ -474,7 +474,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
       case "[2,3]1":
       case "[3,4]1":
         // fat 2
-        tile.sand = 4;
+        tile.state = 4;
         Ax=tile.bounds[4];
         Ay=tile.bounds[5];
         Bx=tile.bounds[0];
@@ -485,7 +485,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
         break;
       case "[0,4]2":
         // fat 2
-        tile.sand = 4;
+        tile.state = 4;
         Ax=tile.bounds[0];
         Ay=tile.bounds[1];
         Bx=tile.bounds[4];
@@ -497,7 +497,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
       case "[0,3]1":
       case "[1,4]1":
         // thin 1
-        tile.sand = 7;
+        tile.state = 7;
         Ax=tile.bounds[4];
         Ay=tile.bounds[5];
         Bx=tile.bounds[0];
@@ -510,7 +510,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
       case "[1,3]2":
       case "[2,4]2":
         // thin 1
-        tile.sand = 7;
+        tile.state = 7;
         Ax=tile.bounds[0];
         Ay=tile.bounds[1];
         Bx=tile.bounds[4];
@@ -523,7 +523,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
       case "[1,3]1":
       case "[2,4]1":
         // thin 2
-        tile.sand = 8;
+        tile.state = 8;
         Ax=tile.bounds[4];
         Ay=tile.bounds[5];
         Bx=tile.bounds[0];
@@ -535,7 +535,7 @@ Tiling.P0splitP3lasercut = function({width,height,iterations,knotchN,kwidth,roun
       case "[0,3]2":
       case "[1,4]2":
         // thin 2
-        tile.sand = 8;
+        tile.state = 8;
         Ax=tile.bounds[0];
         Ay=tile.bounds[1];
         Bx=tile.bounds[4];

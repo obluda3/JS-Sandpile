@@ -33,7 +33,7 @@ Tile.truncSqTile = function(x, y){
 	bounds.push(dist*x, dist*y+1);
 	
 	let tile = new Tile(id, neighbors, bounds, 4);
-	tile.sand = 1;
+	tile.state = 1;
 	return tile ;
 }
 

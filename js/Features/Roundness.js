@@ -164,7 +164,7 @@ Tiling.prototype.get_roundness = function(){
     while(tileStack.length != 0){
       let id = tileStack.shift();
       let tile = this.tiles[id];
-      if((!outerTiles.includes(id)) && (tile.sand == tile.limit-1)){
+      if((!outerTiles.includes(id)) && (tile.state == tile.limit-1)){
         // new outerTile
         outerTiles.push(id);
         tileStack.push(...tile.neighbors);
@@ -177,7 +177,7 @@ Tiling.prototype.get_roundness = function(){
       let tile = this.tiles[id];
       if(tile.neighbors.filter(nid => {
           let ntile = this.tiles[nid];
-          return ntile.sand != ntile.limit-1;
+          return ntile.state != ntile.limit-1;
         }).length > 0){
         // a neighbor in innerTiles
         frontierTiles.push(id);
@@ -195,7 +195,7 @@ Tiling.prototype.get_roundness = function(){
     // update outerTiles, frontierTiles
     // use the fact that only frontierTiles can change their sand content
     let outerTiles_new = [];
-    if(frontierTiles.filter(id => this.tiles[id].sand != this.tiles[id].limit-1).length > 0){
+    if(frontierTiles.filter(id => this.tiles[id].state != this.tiles[id].limit-1).length > 0){
       // some frontierTiles are not outerTiles anymore: recompute all as in phase 1+2
       phase = 2;
       return this.get_roundness();
@@ -206,7 +206,7 @@ Tiling.prototype.get_roundness = function(){
       while(tileStack.length != 0){
         let id = tileStack.shift();
         let tile = this.tiles[id];
-        if((!outerTiles.includes(id)) && (tile.sand == tile.limit-1)){
+        if((!outerTiles.includes(id)) && (tile.state == tile.limit-1)){
           // new outerTile
           outerTiles.push(id);
           outerTiles_new.push(id);
@@ -220,7 +220,7 @@ Tiling.prototype.get_roundness = function(){
         let tile = this.tiles[id];
         if(tile.neighbors.filter(nid => {
             let ntile = this.tiles[nid];
-            return ntile.sand != ntile.limit-1;
+            return ntile.state != ntile.limit-1;
           }).length > 0){
           // a neighbor in innerTiles
           frontierTiles_new.push(id);
@@ -265,7 +265,7 @@ Tiling.prototype.get_roundness = function(){
     let tile = this.tiles[id];
     tile.neighbors.forEach(nid => {
       let ntile = this.tiles[nid];
-      if(ntile.sand != ntile.limit-1){
+      if(ntile.state != ntile.limit-1){
         innerTiles_sub.push(nid);
       }
     });
@@ -533,7 +533,7 @@ async function makeRoundnessFileFast(tiling){
     }
     // check if phase 2 is reached
     // quick pre-check from inscribedTiles
-    if(inscribedTiles.filter(id => tiling.tiles[id].sand != tiling.tiles[id].limit-1).length == 0){
+    if(inscribedTiles.filter(id => tiling.tiles[id].state != tiling.tiles[id].limit-1).length == 0){
       // we may have innerRadius <= inscribedCircleRadius
       console.log("  pre-check transition to phase 2 passed at step "+number_of_steps);
       // full check with .get_roundness()
@@ -569,7 +569,7 @@ async function makeRoundnessFileFast(tiling){
   while(tileStack.length != 0){
     let id = tileStack.shift();
     let tile = tiling.tiles[id];
-    if((!outerTiles.includes(id)) && (tile.sand == tile.limit-1)){
+    if((!outerTiles.includes(id)) && (tile.state == tile.limit-1)){
       // new outerTile
       outerTiles.push(id);
       tileStack.push(...tile.neighbors);
@@ -582,7 +582,7 @@ async function makeRoundnessFileFast(tiling){
     let tile = tiling.tiles[id];
     if(tile.neighbors.filter(nid => {
         let ntile = tiling.tiles[nid];
-        return ntile.sand != ntile.limit-1;
+        return ntile.state != ntile.limit-1;
       }).length > 0){
       // a neighbor in innerTiles
       frontierTiles.push(id);
@@ -594,7 +594,7 @@ async function makeRoundnessFileFast(tiling){
   let outerTiles_sub = Array.from(frontierTiles);
   frontierTiles.forEach(id =>
     outerTiles_sub.push(...tiling.tiles[id].neighbors.filter(nid => 
-      tiling.tiles[nid].sand == tiling.tiles[nid].limit-1
+      tiling.tiles[nid].state == tiling.tiles[nid].limit-1
     ))
   );
   // remove duplicates
@@ -632,7 +632,7 @@ async function makeRoundnessFileFast(tiling){
       let id = tileStack.shift();
       let tile = tiling.tiles[id];
       // shortcut: we have no outerTiles(_sub) tile in tileStack 2/3
-      if(tile.sand == tile.limit-1){
+      if(tile.state == tile.limit-1){
         // new outerTile
         outerTiles_sub.push(id);
         outerTiles_new.push(id);
@@ -649,7 +649,7 @@ async function makeRoundnessFileFast(tiling){
       let tile = tiling.tiles[id];
       if(tile.neighbors.filter(nid => {
           let ntile = tiling.tiles[nid];
-          return ntile.sand != ntile.limit-1;
+          return ntile.state != ntile.limit-1;
         }).length > 0){
         // a neighbor in innerTiles
         frontierTiles_new.push(id);
@@ -662,7 +662,7 @@ async function makeRoundnessFileFast(tiling){
     outerTiles_sub = Array.from(frontierTiles);
     frontierTiles.forEach(id =>
       outerTiles_sub.push(...tiling.tiles[id].neighbors.filter(nid => 
-        tiling.tiles[nid].sand == tiling.tiles[nid].limit-1
+        tiling.tiles[nid].state == tiling.tiles[nid].limit-1
       ))
     );
     outerTiles_sub = outerTiles_sub.filter(function(e,i,self){return i === self.indexOf(e);});
@@ -685,7 +685,7 @@ async function makeRoundnessFileFast(tiling){
       let tile = tiling.tiles[id];
       tile.neighbors.forEach(nid => {
         let ntile = tiling.tiles[nid];
-        if(ntile.sand != ntile.limit-1){
+        if(ntile.state != ntile.limit-1){
           innerTiles_sub.push(nid);
         }
       });
@@ -744,7 +744,7 @@ async function makeRoundnessFileFast(tiling){
 
     // check regression of frontier
     //ctime = performance.now();//TIME
-    if(frontierTiles.filter(id => tiling.tiles[id].sand != tiling.tiles[id].limit-1).length > 0){
+    if(frontierTiles.filter(id => tiling.tiles[id].state != tiling.tiles[id].limit-1).length > 0){
       console.log("  warning: unexpected frontier regression at step "+number_of_steps);
       roundness_file_text += "warning: unexpected frontier regression at step "+number_of_steps+"\n";
     }
@@ -952,7 +952,7 @@ function export_frontierTikz(){
   while(tileStack.length != 0){
     let id = tileStack.shift();
     let tile = tiling.tiles[id];
-    if((!outerTiles.includes(id)) && (tile.sand == tile.limit-1)){
+    if((!outerTiles.includes(id)) && (tile.state == tile.limit-1)){
       // new outerTile
       outerTiles.push(id);
       tileStack.push(...tile.neighbors);
@@ -964,7 +964,7 @@ function export_frontierTikz(){
     let tile = tiling.tiles[id];
     if(tile.neighbors.filter(nid => {
         let ntile = tiling.tiles[nid];
-        return ntile.sand != ntile.limit-1;
+        return ntile.state != ntile.limit-1;
       }).length > 0){
       // a neighbor in innerTiles
       frontierTiles.push(id);
@@ -996,7 +996,7 @@ function export_frontierTikz(){
             // found the neighbor
             found_neighbor = true;
             // check if it is an inner tile
-            if(ntile.sand != ntile.limit-1){
+            if(ntile.state != ntile.limit-1){
               // yes: new frontier edge
               frontierEdges.push([[x1,y1],[x2,y2]]);
             }
@@ -1033,7 +1033,7 @@ function export_frontierTikz(){
     let tile = tiling.tiles[id];
     tile.neighbors.forEach(nid => {
       let ntile = tiling.tiles[nid];
-      if(ntile.sand != ntile.limit-1){
+      if(ntile.state != ntile.limit-1){
         innerTiles_sub.push(nid);
       }
     });
@@ -1105,7 +1105,7 @@ Tiling.prototype.get_roundness_version1 = function(){
 		round_delay = 0;
 		for(var i = 0; i<this.tiles.length; i++){
 			if(this.tiles[i].neighbors.length < this.tiles[i].limit){ // If tile on the edge
-				if(this.tiles[i].sand != this.tiles[i].limit - 1){    // Not at the limit
+				if(this.tiles[i].state != this.tiles[i].limit - 1){    // Not at the limit
 					return {"Min":0, "Max":0};						  		// -> There is no circle yet, return
 				}
 				if(!bound_set.includes(this.tiles[i].id)){
@@ -1118,7 +1118,7 @@ Tiling.prototype.get_roundness_version1 = function(){
 		do{
 			added_tiles = [];
 			for(var i = 0; i<this.tiles.length; i++){
-				if(this.tiles[i].sand == this.tiles[i].limit-1){
+				if(this.tiles[i].state == this.tiles[i].limit-1){
 					if(!bound_set.includes(this.tiles[i].id)) {											// This tile is in the current disk, and at the limit
 						for(var j=0; j<this.tiles[i].neighbors.length; j++){
 							if(bound_set.includes(this.tiles[this.tiles[i].neighbors[j]].id)){			// This tile qualifies to be added to the bounds
@@ -1141,7 +1141,7 @@ Tiling.prototype.get_roundness_version1 = function(){
 	var max_radius = 0;
 	var added_tiles = [];
 	for(var i = 0; i<this.tiles.length; i++){
-		if(this.tiles[i].sand == this.tiles[i].limit-1){
+		if(this.tiles[i].state == this.tiles[i].limit-1){
 			if(!bound_set.includes(this.tiles[i].id)) {												// This tile is in the current disk, and at the limit
 				for(var j=0; j<this.tiles[i].neighbors.length; j++){
 					if(bound_set.includes(this.tiles[this.tiles[i].neighbors[j]].id)){	

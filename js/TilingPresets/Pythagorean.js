@@ -59,6 +59,6 @@ Tile.pythSmall = function(x, y){
 	bounds.push(x_new, y_new+0.5);
 	
 	let tile = new Tile(id, neighbors, bounds, 4);
-	tile.sand = 1;
+	tile.state = 1;
 	return tile;
 }

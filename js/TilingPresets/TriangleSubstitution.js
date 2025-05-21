@@ -101,12 +101,12 @@ function incenterSubstitution(tile){
 	
 	
 	// add sand to ease the visualization of the subsitution
-	t0.sand = 0;
-	t1.sand = 1;
-	t2.sand = 2;
-	t3.sand = 3;
-	t4.sand = 4;
-	t5.sand = 5;
+	t0.state = 0;
+	t1.state = 1;
+	t2.state = 2;
+	t3.state = 3;
+	t4.state = 4;
+	t5.state = 5;
 	
 	// build tiles
 	var newtiles = [];

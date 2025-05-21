@@ -272,7 +272,7 @@ Tiling.PenroseCutandproject = function({size}={}){
   let idkey_colored = [[0,1],[1,2],[2,3],[3,4],[0,4]].map(t => id2key(t));
   tiles.forEach(tile => {
     if(idkey_colored.includes(tile.id[0])){
-      tile.sand=1;
+      tile.state=1;
     }
   });
   // done
@@ -316,7 +316,7 @@ Tiling.AmmannBeenkerCutandproject = function({size}={}){
   let idkey_colored = [[0,2],[1,3]].map(t => id2key(t));
   tiles.forEach(tile => {
     if(idkey_colored.includes(tile.id[0])){
-      tile.sand=1;
+      tile.state=1;
     }
   });
   // done
@@ -361,10 +361,10 @@ Tiling.TwelveFoldCutandproject = function({size}={}){
   let idkey_colored2 = [[0,3],[1,4],[2,5]].map(t => id2key(t));
   tiles.forEach(tile => {
     if(idkey_colored1.includes(tile.id[0])){
-      tile.sand=1;
+      tile.state=1;
     }
     else if(idkey_colored2.includes(tile.id[0])){
-      tile.sand=2;
+      tile.state=2;
     }
   });
   // done
@@ -445,9 +445,9 @@ Tiling.nfold_simple = function({size, order, cropMethod}={}){
   tiles.forEach( tile => {
     let tile_color = color_dict[tile.id[0]];
     if (tile_color == undefined) {
-      tile.sand = 0;
+      tile.state = 0;
     } else {
-      tile.sand = parseInt(tile_color);
+      tile.state = parseInt(tile_color);
     }
   });
   console.log("done");
@@ -495,10 +495,10 @@ Tiling.GoldenOctogonalCutandproject = function({size}={}){
   let idkey_colored2 = [[1,2]].map(t => id2key(t));
   tiles.forEach(tile => {
     if(idkey_colored1.includes(tile.id[0])){
-      tile.sand=1;
+      tile.state=1;
     }
     else if(idkey_colored2.includes(tile.id[0])){
-      tile.sand=2;
+      tile.state=2;
     }
   });
   // done
@@ -554,10 +554,10 @@ Tiling.RauzyCutandproject = function({size}={}){
   let idkey_colored2 = [[1,2]].map(t => id2key(t));
   tiles.forEach(tile => {
     if(idkey_colored1.includes(tile.id[0])){
-      tile.sand=1;
+      tile.state=1;
     }
     else if(idkey_colored2.includes(tile.id[0])){
-      tile.sand=2;
+      tile.state=2;
     }
   });
   // done

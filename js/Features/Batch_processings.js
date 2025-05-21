@@ -351,7 +351,7 @@ function sameTile(tile1,tile2){
 // return the diff of two tilings
 // tiling1 is supposed to be included in tiling2
 // both sandpiles are supposed to be stable
-// tiling2 is returned with difference marked by .sand = .limit
+// tiling2 is returned with difference marked by .state = .limit
 function tilingDiff(tiling1,tiling2){
   let p_error=0.01;
   // order the tiles by smallest minimum (x,y)
@@ -380,23 +380,23 @@ function tilingDiff(tiling1,tiling2){
       }
     }
   });
-  // use the same map to change .sand of tiling2
+  // use the same map to change .state of tiling2
   // 0. sort again tiles by id
   tiling1.tiles.sort((tile1,tile2) => tile1.id - tile2.id);
   tiling2.tiles.sort((tile1,tile2) => tile1.id - tile2.id);
-  // 1. different sand content => .sand = .limit
+  // 1. different sand content => .state = .limit
   same.forEach((id2,id1)=>{
-    if(tiling1.tiles[id1].sand != tiling2.tiles[id2].sand){
+    if(tiling1.tiles[id1].state != tiling2.tiles[id2].state){
       // contents are different
-      tiling2.tiles[id2].sand = tiling2.tiles[id2].limit;
+      tiling2.tiles[id2].state = tiling2.tiles[id2].limit;
     }
   });
-  // 2. do not exist in tiling1 => .sand = .limit+1
+  // 2. do not exist in tiling1 => .state = .limit+1
   let same_rev = new Map(Array.from(same, entry => [entry[1], entry[0]])); // source: https://stackoverflow.com/a/56550600
   tiling2.tiles.forEach(tile2 => {
     if(!same_rev.has(tile2.id)){
       // tile2 not in tiling1
-      tile2.sand = tile2.limit+1;
+      tile2.state = tile2.limit+1;
     }
   });
   // 3. update tile colors

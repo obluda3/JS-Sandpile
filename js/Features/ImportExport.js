@@ -19,7 +19,7 @@ function jsonToTiling(json){
     for(var i = 0; i < json.tiles.length; i++){
         var tileJson = json.tiles[i]
 		var til = new Tile(tileJson.id, tileJson.neighbors, tileJson.bounds, tileJson.lim);
-		til.sand = tileJson.sand;
+		til.state = tileJson.state;
         tiles.push(til);
     }
 
@@ -57,7 +57,7 @@ function tilingToJson(sandpile){
 
     for(var i = 0; i < sandpile.tiles.length; i++){
         var tile = sandpile.tiles[i];
-        tiles.push({id: tile.id, neighbors: tile.neighbors, bounds: tile.bounds, lim: tile.limit, sand:tile.sand});
+        tiles.push({id: tile.id, neighbors: tile.neighbors, bounds: tile.bounds, lim: tile.limit, sand:tile.state});
         
     }
 
@@ -398,8 +398,8 @@ function tilingToTIKZtxt(sandpile){
     // construct color_map: sand -> svg_color
     let color_map = new Map();
     for(let tile of sandpile.tiles){
-        if(!color_map.has(tile.sand)){
-            color_map.set(tile.sand,tile.svg_color);
+        if(!color_map.has(tile.state)){
+            color_map.set(tile.state,tile.svg_color);
         }
     }
     // define colors (hexa colors as \definecolor{foo}{HTML}{hexa})
@@ -422,7 +422,7 @@ function tilingToTIKZtxt(sandpile){
         tikz += "\n";
     // draw tiles
     for(let tile of sandpile.tiles){
-        let tikz_tile = "\\fill[fill=c"+ tile.sand +"]";
+        let tikz_tile = "\\fill[fill=c"+ tile.state +"]";
 	for(var j=0; j<tile.bounds.length; j+=2)
 	    tikz_tile += " ("+ tile.bounds[j].toFixed(3) +","+ tile.bounds[j+1].toFixed(3) +") --";
 	tikz_tile += " cycle;\n";
@@ -460,7 +460,7 @@ handleFileSelect = function(evt) {
     reader.onload = function(evt){
         var fileString = evt.target.result;
         var json = JSON.parse(fileString);
-        //app.sandpile = json;
+        //app.statepile = json;
         jsonToTiling(json);
     }
 }

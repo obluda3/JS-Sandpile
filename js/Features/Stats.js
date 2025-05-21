@@ -10,10 +10,10 @@
 Tiling.prototype.get_stats = function(){
 	var population = {};
 	for(var i = 0; i<this.tiles.length; i++){
-		if(!population[this.tiles[i].sand])
-			population[this.tiles[i].sand] = 1;
+		if(!population[this.tiles[i].state])
+			population[this.tiles[i].state] = 1;
 		else 
-			population[this.tiles[i].sand]++ ;
+			population[this.tiles[i].state]++ ;
 	}
 	
 	return population;

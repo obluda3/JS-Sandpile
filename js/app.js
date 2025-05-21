@@ -158,7 +158,7 @@ function step(){
                 increment_number_of_steps();
 		currentTiling.colorTiles();
 		if(selectedTile)
-			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].state;
 	}
 }
 
@@ -174,7 +174,7 @@ function steps(){
                 }
 		currentTiling.colorTiles();
 		if(selectedTile)
-			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+			tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].state;
 	}
 }
 
@@ -195,7 +195,7 @@ function iterateTiling(){
 		playPause(document.getElementById("playButton"));
 	currentTiling.colorTiles();
 	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].state;
 
 }
 
@@ -210,7 +210,7 @@ function stabTiling(){
 	}
 
 	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].state;
 }
 
 
@@ -281,7 +281,7 @@ function complexOperationAdd(){
 	}
 
 	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].state;
 }
 
 function complexOperationSet(){
@@ -340,7 +340,7 @@ function complexOperationSet(){
 	}
 
 	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].state;
 }
 
 function complexOperationSub(){
@@ -390,7 +390,7 @@ function complexOperationSub(){
 	}
 
 	if(selectedTile)
-		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].state;
 }
 
 // ################################################
@@ -704,7 +704,7 @@ function CanvasClick(event, force){
 					selectedTile = lastTile;
 					
 					console.log(currentTiling.tiles[selectedTile]);
-					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
+					tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].state;
 					currentTiling.selectedIndex = currentTiling.indexDict[face.faceIndex*3];
 					break;
 

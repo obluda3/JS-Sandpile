@@ -596,7 +596,7 @@ function substitute(iterations,tiles,ratio,mysubstitution,mydupinfos,mydupinfoso
   // decorate tiles
   if(mydecoration_option != false){
     console.log("decorate tiles");
-    tiles.forEach(tile => tile.sand=mydecoration_option.get(tile.id[0]));
+    tiles.forEach(tile => tile.state=mydecoration_option.get(tile.id[0]));
   }
   // done
   console.log("done");
