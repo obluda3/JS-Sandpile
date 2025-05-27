@@ -1,5 +1,6 @@
 class HexLifeRule{
     constructor(){
+        this.is_global = false;
     }
 
     iterate(tile, neighbors){

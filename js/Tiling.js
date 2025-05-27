@@ -258,10 +258,14 @@ class Tiling{
 		for(var i=0; i<this.tiles.length; i++)
 			this.tiles[i].prevState = this.tiles[i].state;
 		
-		for(var i=0; i<this.tiles.length; i++)
-			if (this.rule.iterate(this.tiles[i], this.tiles[i].neighbors.map(x => this.tiles[x])))
-				is_stable = false;
+		if (this.rule.is_global)
+			is_stable = !this.rule.global_iteration(this.tiles);
+		else 
+			for(var i=0; i<this.tiles.length; i++)
+				if (this.rule.iterate(this.tiles[i], this.tiles[i].neighbors.map(x => this.tiles[x])))
+					is_stable = false;
 		
+
 		return is_stable;
 	}
 	
