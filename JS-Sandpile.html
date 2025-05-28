@@ -264,6 +264,7 @@
 		 <div id="cell controls" class="controlGroup">
 			<p class="groupTitle">Cellular automaton mode</p>
 			<select id="cellularAutomaton" onchange="updateRule()">
+				<option value="VacantParticle">VP</option> 
 				<option value="CellRule">CELL</option>
 				<option value="SandpileRule">Sandpile</option>
 				<option value="HexLifeRule">Hex GoL</option>
@@ -486,6 +487,7 @@
 	<script src="./js/Utils/gpu-browser.min.js"></script>
 
 	<script src="./js/Evolution/HexLifeRule.js"></script>
+	<script src="./js/Evolution/VacantParticle.js"></script>
 	<script src="./js/Evolution/SandpileRule.js"></script>
 	<script src="./js/Evolution/GameOfLifeRule.js"></script>
 	<script src="./js/Evolution/CellRule.js"></script>
