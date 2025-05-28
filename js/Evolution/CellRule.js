@@ -1,3 +1,4 @@
+// Implémentation de CELL de Gunji et al (2008)
 class CellRule {
     constructor(){
         this.m = 6
