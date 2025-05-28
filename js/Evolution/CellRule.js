@@ -16,8 +16,7 @@ class CellRule {
     }
 
     global_iteration(tiles) {
-        if (this.phase == 0)  
-            return this.development(tiles);
+        var develop = this.development(tiles);
         // Implémentation de l'algorithme pour "manger 0"
         
         // (1)
@@ -27,6 +26,8 @@ class CellRule {
             for (const tile of tiles) 
                 if (tile.prevState == this.m)
                     cytoskeleton.push(tile);
+            if (cytoskeleton.length == 0)
+                return develop;
             this.stimulus_point = this.random_choice(cytoskeleton);
 
             // (2) définition d'une nouvelle bulle
@@ -36,13 +37,15 @@ class CellRule {
                 if (tiles[sp.neighbors[i]].prevState == 0)
                     zero.push(tiles[sp.neighbors[i]]);
             
-            this.bubble = this.random_choice(zero);
-            this.stimulus_point.state = 0;
-            this.bubble.state = this.stimulus_point.prevState;
+            var bubble = this.random_choice(zero);
 
             // (3)
             for (const tile of tiles)
                 tile.state = tile.prevState == 1 ? this.m : tile.prevState;
+
+            bubble.state = this.stimulus_point.prevState;
+            this.stimulus_point.state = bubble.prevState;
+            this.bubble = this.stimulus_point;
 
             this.moves = 0;
             return true;
@@ -72,8 +75,8 @@ class CellRule {
                 bubble.state = this.m;
                 new_bubble.state = 0;
                 this.bubble = new_bubble;
+                return true;
             }
-            return true;
         } 
 
         // (8)
@@ -123,11 +126,6 @@ class CellRule {
 
             if (state < this.m && state > 1)
                 tile.state = state+1;
-            
-            if (state == this.m && count == 0) {
-                tile.state = 1;
-                this.phase = 1;
-            }
         }
         return has_changed;
     }
