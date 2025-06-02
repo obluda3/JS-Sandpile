@@ -1,4 +1,11 @@
 // Implémentation de VP de Gunji et al (2011)
+
+const State = {
+    Vacant:0,
+    Sol:1,
+    Gel:2,
+    VacantParticle:3
+}
 class VacantParticle {
     constructor(){
         this.m = 6;
@@ -15,53 +22,55 @@ class VacantParticle {
         do {
             var vacant_particles = [];
             for (const tile of tiles)
-                if (tile.state == 3)
+                if (tile.state == State.VacantParticle)
                     vacant_particles.push(tile);
             
             this.s += 1;
+
+            // recherche de particules vacantes
             if (this.s == 1 || vacant_particles.length == 0) {
                 var vacant_neighbors = [];
                 for (const tile of tiles)
-                    if (tile.state == 0 && this.neighbor_state(tile, 1, tiles).length > 0)
+                    if (tile.state == State.Vacant && this.neighbor_state(tile, State.Sol, tiles).length > 0)
                         vacant_neighbors.push(tile);
                 if (vacant_neighbors.length <= 0)
                     continue;
                 var vacant_particle = this.random_choice(vacant_neighbors);
-                vacant_particle.state = 3;
+                vacant_particle.state = State.VacantParticle;
                 continue;
             }
 
+            // choix d'une vp se trouvant à l'intérieur du blob
             var vacant_particle = null;
             for (var i = 0; i < vacant_particles.length; i++) {
-                var neighbors = this.neighbor_state(vacant_particles[i], 1, tiles);
-                if (neighbors.length > 0 && neighbors.length < 3)
+                var neighbors = this.neighbor_state(vacant_particles[i], State.Sol, tiles);
+                if (neighbors.length > 0)
                     vacant_particle = vacant_particles[i];
             }
             
+            // s'il n'y en a pas, on a fini
             if (vacant_particle === null || this.s >= this.s_time) {
                 for (const tile of tiles) {
-                    if (tile.state == 2)
-                        tile.state = 1;
-                    else if (tile.state == 3)
-                        tile.state = 0;
+                    if (tile.state == State.Gel)
+                        tile.state = State.Sol;
+                    else if (tile.state == State.VacantParticle)
+                        tile.state = State.Vacant;
                 }
                 this.s = 0;
                 continue;
             }
             
-            var tmp = this.neighbor_state(vacant_particle, 1, tiles);
-            console.log(tmp);
-            console.log(vacant_particle);
-            var new_vacant_particle = this.random_choice(this.neighbor_state(vacant_particle, 1, tiles));
-            new_vacant_particle.state = 3;
-            vacant_particle.state = 2;
+            // définition d'une nouvelle v-p parmi les voisins de l'ancienne
+            var new_vacant_particle = this.random_choice(this.neighbor_state(vacant_particle, State.Sol, tiles));
+            new_vacant_particle.state = State.VacantParticle;
+            vacant_particle.state = State.Gel;
 
             continue;
-        } while (this.s != 0)
+        } while (1==0)//(this.s != 0)
         return true;
     }
 
-    
+    // renvoie la liste des voisins de tile ayant l'état state
     neighbor_state(tile, state, tiles) {
         var result = [];
         for (var i = 0; i < tile.neighbors.length; i++) {
