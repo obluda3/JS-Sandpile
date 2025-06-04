@@ -48,13 +48,15 @@ class VacantParticle {
 
             // choix d'une vp se trouvant à l'intérieur du blob
             var vp = null;
+            var vacant_particles = []
             for (const tile of tiles)
-                if (this.is_state(tile.state, State.VacantParticle))
-                    vp = tile;
+                if (this.is_state(tile.state, State.VacantParticle) && this.neighbor_state(tile, State.Sol, tiles).length > 0)
+                    vacant_particles.push(tile);
+            var vp = vacant_particles.length > 0 ? this.random_choice(vacant_particles) : null;
 
             // s'il n'y en a pas ou qu'elle ne peut pas se propager
             // on peut solidifer le gel, et supprimer les vp restantes
-            if (vp === null || this.s >= this.s_time || this.neighbor_state(vp, State.Sol, tiles).length == 0) {
+            if (vp === null || this.s >= this.s_time) {
                 this.reset_board(tiles);
                 break;
             }
