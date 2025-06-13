@@ -414,13 +414,16 @@ class Tiling{
 			if(colorNum >= 0){
 				color = this.cmap[colorNum];
 			} else{
-				// default
-				if (tile.state == 0) 
-					color = new THREE.Color("#ffffff");
-				else if(tile.state < 12){
-					color = tile.state % 2 ? new THREE.Color("#ffff4d") : new THREE.Color("#ffbb33");
+				if(tile.state >= tile.limit){
+					// ready to topple - flashy colors
+					var flashy = ["#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66", "#44ff11", "#22ffaa", "#00ffff", "#0077ff",  "#0000ff"];
+					var flashyIndex = Math.min(tile.state-tile.limit, flashy.length-1);
+					color = new THREE.Color(flashy[flashyIndex]);
 				} else {
-					color = new THREE.Color("#ff0000");
+					// stable, grey
+					var greyScale = 1.0 - tile.state / tile.limit;
+					color = new THREE.Color( greyScale, greyScale, greyScale );
+					
 				}
 			}
 		}
