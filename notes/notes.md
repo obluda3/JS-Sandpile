@@ -1,5 +1,7 @@
 # Notes de stage
 
+remarque: le markdown s'affiche un peu mal parfois sur github, surtout l'intégration latex.
+
 ## Le Blob
 
 Organisme unicellulaire, physarum polycephalum capable de résoudre un certain nombre de problèmes etc 
