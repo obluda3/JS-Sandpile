@@ -8,7 +8,7 @@ Organisme unicellulaire, physarum polycephalum capable de résoudre un certain n
 Plus d'infos sur le docu arte, sur le site du cnrs et sur misterblob par ex
 
 quelques problèmes qu'il est capable de résoudre
-
+ 
 ### Réseaux de transport
 
 Source: https://www.youtube.com/82hXb0eS52Y?si=7A5NjTLrjXF2jxoy
@@ -245,20 +245,47 @@ la taille du blob varie selon une  part d'aléatoire en fonction des dynamiques 
 
 Globalement, il semblerait qu'on considère des "agents" qui se déplacent en emettant du chimioattracteur (pour la nourriture et pour le blob lui meme), et selon l'intéraction qu'il y a entre les chimioattracteurs, on peut faire apparaître des comportement cmoplexes. On peut par exemple se diriger vers les endroits ou l'attractuers est le plus fort etc
 
+Tous les aspects de rotation etc sont un peu forçables, mais pas très satisfaisants.
+
+Comportement différent en condition de faim (peu de nourriture) vs beaucoup. (exploration vs exploitation)
+
+fin du calcul = configuration stable
+
+Analogie espace <-> donnée. On représente les configurations par des répulsifs/attractifs.
+
+On sait
+
+
 #### Modèle basé sur des équations
 
 de Tsompanas et Sirakoulis, présent dans *Cellular Automata Models Simulating Slime Mould Computing* dans AIPM.
 
 Ce modèle est un peu différent. Il est qualifié de CA par les auteurs mais n'en est pas entièrement un (pas très grave, possibnle de le transformer)
 
+NS=Nutrient Sources=nourriture
+SP=Starting Point
+
 On considère que l'état d'une case est définie par les composantes suivantes:
 - $AA$: flag booléen désignant si la case est libre
-- $PM$: pour physarum mass, quantité de blob
-- $CHA$: Chimioattracteur
+- $PM$: pour physarum mass, quantité de blob, à $100$ pour le point initial, $0$ sinon
+- $CHA$: Chimioattracteur, à $100$ initialement pour les sources de nourritures
 - $TE$: flag désignant si la case fait parti d'un *tube* (aspect problématique)
+- $PA_{(i,j),(i-1,j)}$: Physarum attraction, pour chaque direction vaut soit $PAP$ soit $-PAP$ selon si la direction directe ou opposés est la chemical attraction maximale, et 0 pour les autres
+
+Les deux équations peuvent se rétra
 
 Globalement, l'évolution se fait sur deux régimes, pendantle premier, le chimioattracteur et le blob se diffusent selon des équation discrètes (que je recopie pas)
 
+On peut en fait les retraduire
+
+\[
+PM_{t+1}(i,j) = PM_t(i,j) + PMP_1 \times \sum_{v \in \text{Moore}(i,j) }(1+PA_t(v))PM_t(v) - PMP_3 \times PM_t(i,j) + PMP_2 \times \sum_{v \in \text{Diag}(i,j) }(1+PA_t(v))PM_t(v) - PMP_3 \times PM_t(i,j) 
+\]
+
+et 
+
+\[
+CHA_{t+1}(i,j) = CON \times \left( CAP_1\sum_{v \in \text{Moore(i,j)} } CHA_t(v)-CAP_3 \times CHA_t(i,j) + CAP_2 \sum_{v \in \text{Diag(i,j)} } CHA_t(v)-CAP_3 \times CHA_t(i,j)\right)\]
 Pendant le second, on créé des *tubes*, permettant de relier les points de nourriture entre eux. Ce changement de régime est assez problématique, et la création de tube se fait quasi manuellement (pas avec des règles locales) ce qui est pas ouf. En fait, on suit les endroits ou le "gradient" est élevé
 
 on peut régler certains soucis problématique style les fp, mais pour les chgt de régime idk 
