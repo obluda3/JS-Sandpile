@@ -23,7 +23,17 @@ class BlobRule {
         this.chemoAttractantConstant3 = 1; // CAP3
 
         this.consumptionConstant = 1; // CON
-        this.physarumAttraction = 0.3;   
+        this.physarumAttraction = 0.3; // PAP
+    }
+
+    init(tile) {
+        if (!('physarumMass' in tile)) 
+            return true;
+        
+        tile.prevPhysarumMass = tile.physarumMass;
+        tile.prevAvailableArea = tile.availableArea;
+        tile.prevChemoAttractant = tile.chemoAttractant;
+        tile.prevTubeExistence = tile.tubeExistence;
     }
 
     iterate(tile, neighbors) {
@@ -33,53 +43,53 @@ class BlobRule {
             tile.availableArea = tile.state == States.Wall ? 0 : 1;
             tile.chemoAttractant = tile.state == States.Food ? 100 : 0;
             tile.tubeExistence = 0;
+            tile.prevPhysarumMass = tile.physarumMass;
+            tile.prevAvailableArea = tile.availableArea;
+            tile.prevChemoAttractant = tile.chemoAttractant;
+            tile.prevTubeExistence = tile.tubeExistence;
             return true;
         }
-        if (neighbors.length != 8)
+        if (neighbors.length != 8 || tile.prevState == States.Initial)
             return false;
-
-
-        var west = neighbors[0];
-        var east = neighbors[1];
-        var south = neighbors[2];
-        var north = neighbors[3];
-        var northEast = neighbors[4];
-        var northWest = neighbors[5];
-        var southEast = neighbors[6];
-        var southWest = neighbors[7];
 
         var paMap = [0, 0, 0, 0, 0, 0, 0, 0];
         
         var maxChemoattractantIndex = 0;
         for (var i = 0; i < neighbors.length; i++) {
-            if (neighbors[i].chemoAttractant > neighbors[maxChemoattractantIndex].chemoAttractant)
+            if (neighbors[i].prevChemoAttractant > neighbors[maxChemoattractantIndex].prevChemoAttractant)
                 maxChemoattractantIndex = i;
         }
 
-        paMap[maxChemoattractantIndex] = this.physarumAttraction;
-        paMap[this.opposite_side(maxChemoattractantIndex)] = -this.physarumAttraction;
-        var verbose = false;
-        for (var i = 0; i < neighbors.length; i++)
-            if (neighbors[i].state == States.Initial)
-                verbose = true;
-        var pm = tile.physarumMass;
-        var cha = tile.chemoAttractant;
-        if (verbose)
-            console.log(pm + " " + cha);
-        for (var i = 0; i < 4; i++) { // VN
-            tile.physarumMass += this.physarumDiffusionParameter1*((1+paMap[i])*neighbors[i].physarumMass-this.physarumDiffusionParameter3*pm);
-            tile.chemoAttractant += this.chemoAttractantConstant1*(neighbors[i].chemoAttractant-this.chemoAttractantConstant3*cha)
+        if (neighbors[maxChemoattractantIndex].chemoAttractant > tile.chemoAttractant) {
+            paMap[maxChemoattractantIndex] = this.physarumAttraction;
+            paMap[this.opposite_side(maxChemoattractantIndex)] = -this.physarumAttraction;
         }
 
-        for (var i = 4; i < 8; i++) { // Diagonals
-            if (verbose)
-                console.log(tile.physarumMass + " " + tile.chemoAttractant);
-            tile.physarumMass += this.physarumDiffusionParameter2*((1+paMap[i])*neighbors[i].physarumMass-this.physarumDiffusionParameter3*pm);
-            tile.chemoAttractant += this.chemoAttractantConstant2*(neighbors[i].chemoAttractant-this.chemoAttractantConstant3*cha)
+        var pm = tile.physarumMass;
+        var cha = tile.chemoAttractant;
+
+        // Von Neumann neighbors
+        var s1_p = 0;
+        var s1_c = 0;
+        for (var i = 0; i < 4; i++) {
+            if(neighbors[i]){
+                s1_p += (1 + paMap[i]) * neighbors[i].prevPhysarumMass - this.physarumDiffusionParameter3 * pm;
+                s1_c += neighbors[i].prevChemoAttractant - this.chemoAttractantConstant3 * cha;
+            }
         }
-        tile.chemoAttractant*=this.consumptionConstant;
-        if (verbose)
-            console.log(pm + " " + cha);
+
+        // Diagonal neighbors
+        var s2_p = 0;
+        var s2_c = 0;
+        for (var i = 4; i < 8; i++) {
+            if(neighbors[i]){
+                s2_p += this.physarumDiffusionParameter2 * ((1 + paMap[i]) * neighbors[i].prevPhysarumMass - this.physarumDiffusionParameter3 * pm);
+                s2_c += this.chemoAttractantConstant2 * (neighbors[i].prevChemoAttractant - this.chemoAttractantConstant3 * cha);
+            }
+        }
+        
+        tile.physarumMass = Math.max(0, pm + this.physarumDiffusionParameter1*s1_p + this.physarumDiffusionParameter2*s2_p);
+        tile.chemoAttractant = Math.max(0, (cha + this.chemoAttractantConstant1*s1_c + this.chemoAttractantConstant2*s2_c) * this.consumptionConstant);
         return true;
     }
 
@@ -101,7 +111,7 @@ class BlobRule {
             return new THREE.Color("#ffffff");
         
         var result = new THREE.Color("#ffffff");
-        var x = result.lerp(new THREE.Color("#FFE135"), tile.physarumMass/100);
+        var x = result.lerp(new THREE.Color("#ff0000"), tile.physarumMass/100);
         if (tile.physarumMass > 1)
             console.log(x);
         return x;

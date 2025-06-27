@@ -255,8 +255,10 @@ class Tiling{
 	// ------------------------------------------------
 	iterate(){
 		var is_stable = true;
-		for(var i=0; i<this.tiles.length; i++)
+		for(var i=0; i<this.tiles.length; i++) {
 			this.tiles[i].prevState = this.tiles[i].state;
+			this.rule?.init(this.tiles[i]);
+		}
 		
 		if (this.rule.is_global)
 			is_stable = !this.rule.global_iteration(this.tiles);
