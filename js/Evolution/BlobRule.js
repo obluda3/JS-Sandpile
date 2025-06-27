@@ -83,8 +83,8 @@ class BlobRule {
         var s2_c = 0;
         for (var i = 4; i < 8; i++) {
             if(neighbors[i]){
-                s2_p += this.physarumDiffusionParameter2 * ((1 + paMap[i]) * neighbors[i].prevPhysarumMass - this.physarumDiffusionParameter3 * pm);
-                s2_c += this.chemoAttractantConstant2 * (neighbors[i].prevChemoAttractant - this.chemoAttractantConstant3 * cha);
+                s2_p += ((1 + paMap[i]) * neighbors[i].prevPhysarumMass - this.physarumDiffusionParameter3 * pm);
+                s2_c += (neighbors[i].prevChemoAttractant - this.chemoAttractantConstant3 * cha);
             }
         }
         
@@ -112,8 +112,7 @@ class BlobRule {
         
         var result = new THREE.Color("#ffffff");
         var x = result.lerp(new THREE.Color("#ff0000"), tile.physarumMass/100);
-        if (tile.physarumMass > 1)
-            console.log(x);
+
         return x;
     }
 }
