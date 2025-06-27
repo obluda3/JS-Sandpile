@@ -404,6 +404,7 @@ class Tiling{
 	// ------------------------------------------------
 	colorTile(id, color){
 		// Colors only one tile according to this.cmap
+		// or according to the colors from the rule
 		var tile = this.tiles[id];
 		var colorNum = tile.state;
 		if(colorNum >= this.cmap.length){
@@ -411,7 +412,9 @@ class Tiling{
 		}
 		
 		if(!color){
-			if(colorNum >= 0){
+			if (this.rule?.customColor) 
+				color = this.rule.color(tile)
+			else if(colorNum >= 0){
 				color = this.cmap[colorNum];
 			} else{
 				if(tile.state >= tile.limit){

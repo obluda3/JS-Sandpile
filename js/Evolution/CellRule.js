@@ -168,73 +168,73 @@ class CellRule {
         return Math.abs(b[1]-a[1]) + Math.abs(b[0]-a[0]);
     }
 
-    choose_stimulus_point(tiles) {
-        var distances = [];
-        var food_sources = [];
-        var skeleton = [];
-
-        for (const tile of tiles) {
-            if (tile.prevState == this.m+1 && this.neighbor_state(tile, 0, tiles).length > 0)
-                skeleton.push(tile);
-            else if (tile.prevState == this.m+4)
-                food_sources.push(this.calculate_coordinates(tile));
-        }
-
-        var coords = [];
-        for (const tile of skeleton)
-            coords.push(this.calculate_coordinates(tile));
-
-        var sum_d_inverse = 0;
-        for (const tile of skeleton) {
-            var min_d = 10e12;
-            var coords = this.calculate_coordinates(tile);
-            for (const coord of food_sources)
-                min_d = Math.min(min_d, this.distance(coord, coords));
-            sum_d_inverse += 1/(min_d*min_d);
-            distances.push(min_d);
-        }
-
-        var probabilities = [];
-        for (const d of distances) 
-            probabilities.push(1/((d*d)*sum_d_inverse));
-        
-        
-        return this.random_choice_prob(skeleton, probabilities);
-    }
-
-    // choose_stimulus_point_active_zone(tiles) {
+    // choose_stimulus_point(tiles) {
+    //     var distances = [];
+    //     var food_sources = [];
     //     var skeleton = [];
+
     //     for (const tile of tiles) {
     //         if (tile.prevState == this.m+1 && this.neighbor_state(tile, 0, tiles).length > 0)
     //             skeleton.push(tile);
+    //         else if (tile.prevState == this.m+4)
+    //             food_sources.push(this.calculate_coordinates(tile));
     //     }
 
-    //     if (skeleton.length == 0)
-    //         return null;
+    //     var coords = [];
+    //     for (const tile of skeleton)
+    //         coords.push(this.calculate_coordinates(tile));
 
-    //     var active_zones = [ [[-30, -3], [-5, 3]],  [[5, -3], [30, 3]], [[-3, 5], [3, 30]], [[-3, -30], [3, -5]]]; 
-    //     var valid = [];
+    //     var sum_d_inverse = 0;
     //     for (const tile of skeleton) {
-    //         var bar_x = 0;
-    //         var bar_y = 0;
-    //         for (var i = 0; i < tile.bounds.length; i+=2) {
-    //             bar_x += tile.bounds[i];
-    //             bar_y += tile.bounds[i+1];
-    //         }
-
-    //         bar_x = 2 * bar_x / tile.bounds.length;
-    //         bar_y = 2 * bar_y / tile.bounds.length;
-            
-    //         for (const rectangle of active_zones) {
-    //             if (!this.check_in_rectangle(bar_x, bar_y, rectangle))
-    //                 continue;
-    //             valid.push(tile);
-    //             break;
-    //         }
+    //         var min_d = 10e12;
+    //         var coords = this.calculate_coordinates(tile);
+    //         for (const coord of food_sources)
+    //             min_d = Math.min(min_d, this.distance(coord, coords));
+    //         sum_d_inverse += 1/(min_d*min_d);
+    //         distances.push(min_d);
     //     }
-    //     if (valid.length > 0)
-    //         return this.random_choice(valid);
-    //     return this.random_choice(skeleton);
+
+    //     var probabilities = [];
+    //     for (const d of distances) 
+    //         probabilities.push(1/((d*d)*sum_d_inverse));
         
+        
+    //     return this.random_choice_prob(skeleton, probabilities);
     // }
+
+    choose_stimulus_point(tiles) {
+        var skeleton = [];
+        for (const tile of tiles) {
+            if (tile.prevState == this.m+1 && this.neighbor_state(tile, 0, tiles).length > 0)
+                skeleton.push(tile);
+        }
+
+        if (skeleton.length == 0)
+            return null;
+
+        var active_zones = [ [[-30, -3], [-5, 3]],  [[5, -3], [30, 3]], [[-3, 5], [3, 30]], [[-3, -30], [3, -5]]]; 
+        var valid = [];
+        for (const tile of skeleton) {
+            var bar_x = 0;
+            var bar_y = 0;
+            for (var i = 0; i < tile.bounds.length; i+=2) {
+                bar_x += tile.bounds[i];
+                bar_y += tile.bounds[i+1];
+            }
+
+            bar_x = 2 * bar_x / tile.bounds.length;
+            bar_y = 2 * bar_y / tile.bounds.length;
+            
+            for (const rectangle of active_zones) {
+                if (!this.check_in_rectangle(bar_x, bar_y, rectangle))
+                    continue;
+                valid.push(tile);
+                break;
+            }
+        }
+        if (valid.length > 0)
+            return this.random_choice(valid);
+        return this.random_choice(skeleton);
+        
+    }
 }
