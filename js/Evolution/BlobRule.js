@@ -92,8 +92,8 @@ class BlobRule {
             }
         }
         
-        tile.physarumMass = Math.max(0, pm + this.physarumDiffusionParameter1*s1_p + this.physarumDiffusionParameter2*s2_p);
-        tile.chemoAttractant = Math.max(0, (cha + this.chemoAttractantConstant1*s1_c + this.chemoAttractantConstant2*s2_c) * this.consumptionConstant);
+        tile.physarumMass = Math.min(Math.max(0, pm + this.physarumDiffusionParameter1*s1_p + this.physarumDiffusionParameter2*s2_p), 100);
+        tile.chemoAttractant = Math.min(Math.max(0, (cha + this.chemoAttractantConstant1*s1_c + this.chemoAttractantConstant2*s2_c) * this.consumptionConstant), 100);
         return true;
     }
 
@@ -108,14 +108,14 @@ class BlobRule {
         if (tile.state == States.Wall)
             return new THREE.Color("#000000");
         if (tile.state == States.Initial)
-            return new THREE.Color("#ffff00");
+            return new THREE.Color("#FFE135");
         if (tile.state == States.Food)
             return new THREE.Color("#ff0000");
         if (!('physarumMass' in tile))
             return new THREE.Color("#ffffff");
         
         var result = new THREE.Color("#ffffff");
-        var x = result.lerp(new THREE.Color("#ff0000"), tile.physarumMass/100);
+        var x = result.lerp(new THREE.Color("#FFE135"), tile.physarumMass/100);
 
         return x;
     }
