@@ -72,9 +72,11 @@ class BlobRule {
         var s1_p = 0;
         var s1_c = 0;
         for (var i = 0; i < 4; i++) {
-            if(neighbors[i]){
-                s1_p += (1 + paMap[i]) * neighbors[i].prevPhysarumMass - this.physarumDiffusionParameter3 * pm;
-                s1_c += neighbors[i].prevChemoAttractant - this.chemoAttractantConstant3 * cha;
+            s1_p += (1 + paMap[i]) * neighbors[i].prevPhysarumMass;
+            s1_c += neighbors[i].prevChemoAttractant;
+            if (neighbors[i].state != States.Wall) {
+                s2_p -= this.physarumDiffusionParameter3 * pm;
+                s2_c -= this.chemoAttractantConstant3 * cha;
             }
         }
 
@@ -82,9 +84,11 @@ class BlobRule {
         var s2_p = 0;
         var s2_c = 0;
         for (var i = 4; i < 8; i++) {
-            if(neighbors[i]){
-                s2_p += ((1 + paMap[i]) * neighbors[i].prevPhysarumMass - this.physarumDiffusionParameter3 * pm);
-                s2_c += (neighbors[i].prevChemoAttractant - this.chemoAttractantConstant3 * cha);
+            s2_p += (1 + paMap[i]) * neighbors[i].prevPhysarumMass;
+            s2_c += neighbors[i].prevChemoAttractant;
+            if (neighbors[i].state != States.Wall) {
+                s2_p -= this.physarumDiffusionParameter3 * pm;
+                s2_c -= this.chemoAttractantConstant3 * cha;
             }
         }
         
