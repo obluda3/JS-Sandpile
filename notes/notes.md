@@ -293,6 +293,8 @@ un peu une sorte de dérivée discrète, en effet en pratique on met $PMP_3=CAP_
 PM_{t+1}(i,j) = PM_t(i,j) + PMP_1 \times \sum_{v \in \text{VonNeumann}(i,j) }(1+PA_t(v))PM_t(v) - PM_t(i,j) + PMP_2 \times \sum_{v \in \text{Diag}(i,j) }(1+PA_t(v))PM_t(v) - PM_t(i,j) \\
 CHA_{t+1}(i,j) = CHA_t(i,j) + CAP_1\sum_{v \in \text{VonNeumann}(i,j) } CHA_t(v)-CHA_t(i,j) + CAP_2 \sum_{v \in \text{Diag(i,j)} } CHA_t(v)-CHA_t(i,j)\]
 
+On exclut de la somme les termes correspondant à des murs (c'est pas dit dans le papier bouhh)
+
 Pendant le second, on créé des *tubes*, permettant de relier les points de nourriture entre eux. Ce changement de régime est assez problématique, et la création de tube se fait quasi manuellement (pas avec des règles locales) ce qui est pas ouf. En fait, on suit les endroits ou le "gradient" est élevé
 
 on peut régler certains soucis problématique style les fp, mais pour les chgt de régime idk 
