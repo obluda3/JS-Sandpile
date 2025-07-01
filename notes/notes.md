@@ -295,9 +295,67 @@ CHA_{t+1}(i,j) = CHA_t(i,j) + CAP_1\sum_{v \in \text{VonNeumann}(i,j) } CHA_t(v)
 
 On exclut de la somme les termes correspondant à des murs (c'est pas dit dans le papier bouhh)
 
-Pendant le second, on créé des *tubes*, permettant de relier les points de nourriture entre eux. Ce changement de régime est assez problématique, et la création de tube se fait quasi manuellement (pas avec des règles locales) ce qui est pas ouf. En fait, on suit les endroits ou le "gradient" est élevé
+Pendant le second, on créé des *tubes*, permettant de relier les points de nourriture entre eux. Ce changement de régime est assez problématique, et la création de tube se fait quasi manuellement (pas avec des règles locales) ce qui est pas ouf. En fait, on suit les endroits ou le "gradient" est élevé (un peu l'opposé de la descente de gradient).
 
 on peut régler certains soucis problématique style les fp, mais pour les chgt de régime idk 
+
+##### Formation de tubes
+
+Méchanisme permettant d'effectivement créer des réseaux.
+
+Selon le modèle, pour chaque source de nourriture, on forme un tube. La case libre adjacente au tube ayant le gradient de PM le plus élevé devient elle également un élément du tube.
+
+Pour le faire de façon locale (éviter de modifier le voisin du tube, et plutot modifier directement la cellule elle-même), on peut étendre le voisinage à 2. Chaque case libre regarde si elle est adjacente à un membre du tube, puis elle regarde les voisins de ce tube là. Ça permettra d'effectivement réaliser le calcul.
+
+Pour les cellules concernées on passe $TE$ à $1$.
+
+##### Changement de phase
+
+On pourrait reprendre l'idée de la seconde variation du modèle, et déclencher un changement de régime lorsqu'une case de nourriture dépsse un certain seuil de Blob en elle. 
+
+
+##### Définition formelle complète
+
+Bon ça risque d'être horrible.
+
+Un état $E_t(i,j)$ est un 4-uplet $(S_t(i,j), PM_{t}(i,j),CHA_t(i,j), TE_t(i,j) )$ où 
+- $S_t(i,j) \in \{ \text{Food}, \text{Initial}, \text{Wall}, \text{Empty} \}$
+- $PM_t(i,j) \in [0, 100]$
+- $CHA_t(i,j) \in [0, 100]$
+- $TE_t(i,j) \in \{0,1\}$
+
+Initialement
+
+- Si $S_0(i,j)=\text{Food}$, $CHA_0(i,j)=100$
+- Si $S_0(i,j)=\text{Initial}$, $PM_0(i,j)=100$.
+
+Tous les autres sont intialisés à 0.
+
+On a :
+\[
+PM_{t+1}(i,j) = PM_t(i,j) + PMP_1 \times \sum_{v \in \text{VonNeumann}(i,j) } D_{1,t}(i,j,v) + PMP_2 \times \sum_{v \in \text{Diag}(i,j) } D_{1,t}(i,j,v)
+\]
+
+où $D_{1,t}(i,j;v)=(1+PA_t(i,j,v))PM_t(v) - PMP_3 \times PM_t(i,j)$ si $S_t(v) \neq \text{Wall}$, et $0$ sinon
+
+où \[PA_{1,t}(i,j,v) = \begin{cases} PA \text{ si } v=\argmax_{(k,l) \in N(i,j)} PM_t(i,j) \\ -PA \text{ si } v= \text{Opposé}(\argmax_{(k,l) \in N(i,j)} PM_t(i,j)) \\ 0 \text{ sinon }\end{cases}\]
+
+Et,
+\[
+CHA_{t+1}(i,j) = CON \times \left( CHA_t(i,j)+CAP_1\sum_{v \in \text{VonNeumann(i,j)} } D_{2,t}(i,j,v) + CAP_2 \sum_{v \in \text{Diag(i,j)} } D_{2,t}(i,j,v) \right)\]
+
+où $D_{2,t}(i,j;v)=CHA_t(v) - CAP_3 \times CHA_t(i,j)$ si $S_t(v) \neq \text{Wall}$ et $0$ sinon.
+
+Puis:
+\[ S_{t+1}(i,j) = \begin{cases} \text{Initial si } S_t(i,j)=\text{Food et } PM_t(i,j) > PM_{\text{max}} \\ S_t(i,j) \text{ sinon.} \end{cases}\]
+
+$T_{t+1}(i,j)=1$ si une des conditions suivantes est vérifiée:
+- $T_t(i,j)=1$
+- $S_t(i,j)=\text{Food}$ et $PM_t(i,j) > PM_{\text{max}}$.
+-  $\exists (k,l) \in N(i,j), T_t(k,l)=1 \text{ et } (i,j)=\argmax_{v \in N(k,l)} PM_t(v)$ 
+
+En arrondissant aux valeurs entières, on a effectivement un nombre fini, égal à $2 \times 100 \times 100 \times 2 + 2=40002$ états, génial !!!
+(clairement pas satisfaisant...)
 
 
 ## Définition d'un nouveau modèle
