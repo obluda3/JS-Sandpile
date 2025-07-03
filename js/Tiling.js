@@ -114,13 +114,6 @@ class Tiling{
 		this.tiles = tiles;
 		this.hide = hide;
 		this.rule = rule;
-
-		for (const tile of tiles) {
-			var tmp = [];
-			for (const id of tile.neighbors)
-				tmp.push(tiles[id]);
-			tile.neighborsRef = tmp;
-		}
 		
 		if(!hide){
 			
@@ -171,6 +164,12 @@ class Tiling{
 				this.tiles[i].neighbors = new_neighbors;
 			}
 			
+			for (const tile of tiles) {
+				var tmp = [];
+				for (const id of tile.neighbors)
+					tmp.push(tiles[id]);
+				tile.neighborsRef = tmp;
+			}
 			// WireFrame -----------------------------------------------------
 			
 			var wireFrame = [];

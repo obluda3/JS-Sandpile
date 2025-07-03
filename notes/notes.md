@@ -421,8 +421,42 @@ où $Q$ est l'état à proprement parler, $D$ la direction ($\in \{ N,S,W,E\}$),
 
 Vide -> Blob ssi voisin gauche regarde à droite, droite a gauche etc. (priorité NSWE).
 
+---
+
+labyrinthes:
+
+faut qu'une case blanche devenue jaune sache qui l'a rendue jaune.
+
+ensuite, pour pruner, une jaune adjacente d'une nourriture devient jaune_chemin (en mémorisant la direction qu'elle prenait).
+
+ si t'es un blob adjacent d'un jaune_chemin mais dans la mauvaise direction, tu sautes. 
+ sinon tu deviens jaune_chemin
+ de cette façon on garde seulement ceux qui ont le bon chemin bref ça devrait marcher... (en espérant que les schémas de mon cahier sont corrects).
 
 
+fonctionne effectivement avec quelques ajustements (+ rayon de 2)
+
+
+rouge, blanc, gris clair: résidus
+noir: chemin formé
+orange: nourriture
+
+plus ou moins fonctionnel
+![](image-10.png)
+
+parfois une forme de periodicité (donc output pas très propre)
+![](image-1.png)
+
+pas tjrs optimal:
+![](image-9.png)
+
+labyrinth time:
+![](image-3.png)
+![](image-4.png)
+![](image-5.png)
+![](image-6.png)
+![](image-7.png)
+![](image-8.png)
 ## Références
 
 - *Physarum Machines: Computers from Slime Mould*, Andrew Adamatzky, 2010 ()

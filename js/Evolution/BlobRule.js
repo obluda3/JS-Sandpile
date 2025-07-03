@@ -1,122 +1,148 @@
-// Implantation du modèle de Tsompanas
+const Direction = {
+    West: 0,
+    East: 1,
+    South: 2,
+    North: 3,
+    None: 4
+};
 
 const States = {
-    Available:0,
-    Initial:1,
-    Food:2,
-    Wall:3
-}
-class BlobRule {
+    Empty: 0,
+    Blob: 1,
+    Food: 2,
+    Path: 3,
+    RetractingBlob: 4,
+    FoundFood: 5,
+    Wall:6,
+};
 
+class BlobRule {
     constructor() {
         this.is_global = false;
-        this.V_MAX = 20;
-        this.first = false;
-        this.customColor = true;
-
-        this.physarumDiffusionParameter1 = 0.05; // PMP1
-        this.physarumDiffusionParameter2 = 0.025; // PMP2
-        this.physarumDiffusionParameter3 = 1; // PMP3
-        
-        this.chemoAttractantConstant1 = 0.05; // CAP1
-        this.chemoAttractantConstant2 = 0.025; // CAP2
-        this.chemoAttractantConstant3 = 1; // CAP3
-
-        this.consumptionConstant = 1; // CON
-        this.physarumAttraction = 0.3; // PAP
-    }
-
-    init(tile) {
-        if (!('physarumMass' in tile)) 
-            return true;
-        
-        tile.prevPhysarumMass = tile.physarumMass;
-        tile.prevAvailableArea = tile.availableArea;
-        tile.prevChemoAttractant = tile.chemoAttractant;
-        tile.prevTubeExistence = tile.tubeExistence;
+        this.customColor = true
+        this.opposite_directions = {
+            0: 1, 1: 0, 2: 3, 3: 2
+        };
     }
 
     iterate(tile, neighbors) {
-        if (!('physarumMass' in tile)) {
-            // init
-            tile.physarumMass = tile.state == States.Initial ? 100 : 0;
-            tile.availableArea = tile.state == States.Wall ? 0 : 1;
-            tile.chemoAttractant = tile.state == States.Food ? 100 : 0;
-            tile.tubeExistence = 0;
-            tile.prevPhysarumMass = tile.physarumMass;
-            tile.prevAvailableArea = tile.availableArea;
-            tile.prevChemoAttractant = tile.chemoAttractant;
-            tile.prevTubeExistence = tile.tubeExistence;
-            return true;
+        if (!('direction' in tile)) {
+            tile.direction = Direction.None;
         }
-        if (neighbors.length != 8 || tile.prevState == States.Initial)
+
+        if (tile.prevState == States.Path || tile.prevState == States.FoundFood || tile.prevState == States.Wall) {
             return false;
+        }
 
-        var paMap = [0, 0, 0, 0, 0, 0, 0, 0];
+        switch (tile.prevState) {
+            case States.RetractingBlob:
+                tile.state = States.Empty;
+                return true;
+
+            case States.Food:
+                if (neighbors.some(n => n && n.prevState == States.Blob)) {
+                    tile.state = States.FoundFood;
+                    return true;
+                }
+                break;
+
+            case States.Empty:
+                for (var i = 0; i < neighbors.length; i++) {
+                    const neighbor = neighbors[i];
+                    if (neighbor && neighbor.prevState === States.Blob) {
+                        tile.state = States.Blob;
+                        tile.direction = this.opposite_directions[i];
+                        return true;
+                    }
+                }
+                break;
+
+            case States.Blob:
+                if (tile.direction === Direction.None) {
+                    break;
+                }
+
+                let isNextToPath = false;
+                let becomesPath = false;
+
+                for (var i = 0; i < neighbors.length; i++) {
+                    var neighbor = neighbors[i];
+                    if (!neighbor) continue;
+
+                    if (neighbor.prevState === States.Food && neighbor.neighborsRef) {
+                        var foodCell = neighbor;
+                        var myPriority = this.opposite_directions[i];
+                        var isHighestPriority = true;
+
+                        for (var j = 0; j < foodCell.neighborsRef.length; j++) {
+                            var otherBlobCandidate = foodCell.neighborsRef[j];
+                            var otherPriority = j;
+
+                            if (otherBlobCandidate && otherBlobCandidate.prevState === States.Blob) {
+                                if (otherPriority < myPriority) {
+                                    isHighestPriority = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (isHighestPriority) {
+                            tile.state = States.Path;
+                            return true;
+                        }
+                    }
+
+                    if (neighbor.prevState === States.Path) {
+                        isNextToPath = true;
+                        if (neighbor.direction === i) {
+                            becomesPath = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (becomesPath) {
+                    tile.state = States.Path;
+                    return true;
+                }
+
+                if (neighbors.some(n => n && n.prevState === States.RetractingBlob)) {
+                    tile.state = States.RetractingBlob;
+                    return true;
+                }
+
+                if (isNextToPath) {
+                    tile.state = States.RetractingBlob;
+                    return true;
+                }
+                break;
+        }
         
-        var maxChemoattractantIndex = 0;
-        for (var i = 0; i < neighbors.length; i++) {
-            if (neighbors[i].prevChemoAttractant > neighbors[maxChemoattractantIndex].prevChemoAttractant)
-                maxChemoattractantIndex = i;
-        }
-
-        if (neighbors[maxChemoattractantIndex].chemoAttractant > tile.chemoAttractant) {
-            paMap[maxChemoattractantIndex] = this.physarumAttraction;
-            paMap[this.opposite_side(maxChemoattractantIndex)] = -this.physarumAttraction;
-        }
-
-        var pm = tile.physarumMass;
-        var cha = tile.chemoAttractant;
-
-        // Von Neumann neighbors
-        var s1_p = 0;
-        var s1_c = 0;
-        for (var i = 0; i < 4; i++) {
-            s1_p += (1 + paMap[i]) * neighbors[i].prevPhysarumMass;
-            s1_c += neighbors[i].prevChemoAttractant;
-            if (neighbors[i].state != States.Wall) {
-                s2_p -= this.physarumDiffusionParameter3 * pm;
-                s2_c -= this.chemoAttractantConstant3 * cha;
-            }
-        }
-
-        // Diagonal neighbors
-        var s2_p = 0;
-        var s2_c = 0;
-        for (var i = 4; i < 8; i++) {
-            s2_p += (1 + paMap[i]) * neighbors[i].prevPhysarumMass;
-            s2_c += neighbors[i].prevChemoAttractant;
-            if (neighbors[i].state != States.Wall) {
-                s2_p -= this.physarumDiffusionParameter3 * pm;
-                s2_c -= this.chemoAttractantConstant3 * cha;
-            }
-        }
-        
-        tile.physarumMass = Math.min(Math.max(0, pm + this.physarumDiffusionParameter1*s1_p + this.physarumDiffusionParameter2*s2_p), 100);
-        tile.chemoAttractant = Math.min(Math.max(0, (cha + this.chemoAttractantConstant1*s1_c + this.chemoAttractantConstant2*s2_c) * this.consumptionConstant), 100);
-        return true;
-    }
-
-    opposite_side(index) {
-        // [W, E, S, N, NE, NW, SE, SW]
-        //  0  1  2  3   4   5   6   7
-        var map = {0:1, 1:0, 2:3, 3:2, 4:7, 5:6, 6:5, 7:4}
-        return map[index];
+        return false;
     }
 
     color(tile) {
-        if (tile.state == States.Wall)
-            return new THREE.Color("#000000");
-        if (tile.state == States.Initial)
-            return new THREE.Color("#FFE135");
-        if (tile.state == States.Food)
-            return new THREE.Color("#ff0000");
-        if (!('physarumMass' in tile))
-            return new THREE.Color("#ffffff");
-        
-        var result = new THREE.Color("#ffffff");
-        var x = result.lerp(new THREE.Color("#FFE135"), tile.physarumMass/100);
+        switch (tile.state) {
+            case States.Blob:
+                return new THREE.Color("#FFE135");
 
-        return x;
+            case States.Food:
+                return new THREE.Color("#ff0000");
+
+            case States.Path:
+                return new THREE.Color("#d68f00"); 
+
+            case States.RetractingBlob:
+                return new THREE.Color("#fff099");
+
+            case States.FoundFood:
+                return new THREE.Color("#ff4444");
+            
+            case States.Wall:
+                return new THREE.Color("#000000");
+
+            default:
+                return new THREE.Color("#ffffff");
+        }
     }
 }
