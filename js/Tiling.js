@@ -114,6 +114,13 @@ class Tiling{
 		this.tiles = tiles;
 		this.hide = hide;
 		this.rule = rule;
+
+		for (const tile of tiles) {
+			var tmp = [];
+			for (const id of tile.neighbors)
+				tmp.push(tiles[id]);
+			tile.neighborsRef = tmp;
+		}
 		
 		if(!hide){
 			
@@ -257,7 +264,6 @@ class Tiling{
 		var is_stable = true;
 		for(var i=0; i<this.tiles.length; i++) {
 			this.tiles[i].prevState = this.tiles[i].state;
-			this.rule?.init(this.tiles[i]);
 		}
 		
 		if (this.rule.is_global)
