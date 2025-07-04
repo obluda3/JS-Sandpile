@@ -457,6 +457,8 @@ labyrinth time:
 ![](image-6.png)
 ![](image-7.png)
 ![](image-8.png)
+
+![](maze_sim.webp)
 ## Références
 
 - *Physarum Machines: Computers from Slime Mould*, Andrew Adamatzky, 2010 ()
