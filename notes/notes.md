@@ -459,6 +459,51 @@ labyrinth time:
 ![](image-8.png)
 
 ![](maze_sim.webp)
+
+la france (avec Moore):
+![](image-11.png)
+
+### Formalisation du modèle
+
+
+Un état $C_{i,j}$ est un couple $(S_{i,j}, D_{i,j})$ où $S_{i,j} \in \{ \text{Blob}, \text{Food}, \text{Path}, \text{RetractingBlob}, \text{FoundFood}, \text{Wall} \}$ et $D_{i,j} \in \{-1,0,1\}^2$.
+
+Les règles sont les suivantes. Par prioritaire, on entend le premier voisin dans l'ordre suivant : Ouest, Est, Sud, Nord, NordEst, NordOuest, SudEst, SouthWest
+
+##### Extension du blob
+
+Si $S_{i,j} = \text{Empty}$, alors il devient $\text{Blob}$ si il existe $(k,l)$ prioritaire dans le voisinage de $(i,j)$ tel que $S_{k,l} = \text{Blob}$. On met alors $D_{i,j}$ à $ (k,l) - (i,j)$. 
+
+##### Retractation
+Si $S_{i,j} = \text{RetractingBlob}$, alors il devient $\text{Empty}$.
+
+##### Consommation de nourriture
+Si $S_{i,j} = \text{Food}$, alors il devient $\text{FoundFood}$ s'il existe un $(k,l)$ dans le voisinage de $(i,j)$ tel que $S_{k,l} = \text{Blob}$.
+
+---
+
+Les règles qui suivent s'appliquent seulement pour un Blob ayant une direction non nulle (donc différent du point initial).
+##### Formation de chemin
+
+Si $S_{i,j} = \text{Blob}$ et qu'il existe $(k,l)$ dans le voisinage de $(i,j)$ tel que $S_{k,l} = \text{Food}$ et que $(i,j)$ soit prioritaire parmi les voisins de $(k,l)$ d'état $\text{Blob}$, alors $S_{i,j}$ devient $\text{Path}$.
+
+petite précision : on peut vérifier que $(i,j)$ est bien prioritaire parmi les voisins de $(k,l)$ en conservant le caractère local (on a simplement étendu le rayon de voisinage de $1$ à $2$).
+
+##### Extension du chemin
+
+Si la règle précédente n'a pas été appliquée et que $S_{i,j} = \text{Blob}$ et qu'il existe $(k,l)$ dans le voisinage de $(i,j)$ tel que $S_{k,l} = \text{Path}$ et que $(i,j)+D_{k,l} = (k,l)$ alors $S_{i,j}$ devient $\text{Path}$.
+
+##### Élagage des chemins inutiles
+
+Si la règle précédente n'a pas été appliquée et que $S_{i,j} = \text{Blob}$, et qu'il existe $(k,l)$ dans le voisinage de $(i,j)$ tel que $S_{k,l} \in \{ \text{Path}, \text{RetractingBlob}\}$, alors $S_{i,j}$ devient $\text{RetractingBlob}$.
+
+Tous les autres gardent le même état.
+
+
+
+
+
+
 ## Références
 
 - *Physarum Machines: Computers from Slime Mould*, Andrew Adamatzky, 2010 ()

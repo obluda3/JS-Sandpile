@@ -3,9 +3,14 @@ const Direction = {
     East: 1,
     South: 2,
     North: 3,
-    None: 4
+    NorthEast: 4,
+    NorthWest: 5,
+    SouthEast: 6,
+    SouthWest: 7,
+    None: 8
 };
-
+// [W, E, S, N, NE, NW, SE, SW]
+        //  0  1  2  3   4   5   6   7
 const States = {
     Empty: 0,
     Blob: 1,
@@ -21,7 +26,7 @@ class BlobRule {
         this.is_global = false;
         this.customColor = true
         this.opposite_directions = {
-            0: 1, 1: 0, 2: 3, 3: 2
+            0: 1, 1: 0, 2: 3, 3: 2, 4:7, 5:6, 6:5, 7:4
         };
     }
 
@@ -92,9 +97,9 @@ class BlobRule {
                         }
                     }
 
-                    if (neighbor.prevState === States.Path) {
+                    if (neighbor.prevState == States.Path) {
                         isNextToPath = true;
-                        if (neighbor.direction === i) {
+                        if (neighbor.direction == i) {
                             becomesPath = true;
                             break;
                         }
@@ -106,7 +111,7 @@ class BlobRule {
                     return true;
                 }
 
-                if (neighbors.some(n => n && n.prevState === States.RetractingBlob)) {
+                if (neighbors.some(n => n && n.prevState == States.RetractingBlob)) {
                     tile.state = States.RetractingBlob;
                     return true;
                 }
