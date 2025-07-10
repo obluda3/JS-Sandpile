@@ -19,6 +19,7 @@ const States = {
     RetractingBlob: 4,
     FoundFood: 5,
     Wall:6,
+    Initial:7,
 };
 
 class BlobRule {
@@ -54,6 +55,12 @@ class BlobRule {
             case States.Empty:
                 for (var i = 0; i < neighbors.length; i++) {
                     const neighbor = neighbors[i];
+                    if (neighbor.prevState == States.Path) {
+                        if (neighbor.direction == i) {
+                            tile.state = States.Path;
+                            break;
+                        }
+                    }
                     if (neighbor && neighbor.prevState === States.Blob) {
                         tile.state = States.Blob;
                         tile.direction = this.opposite_directions[i];
@@ -64,6 +71,7 @@ class BlobRule {
 
             case States.Blob:
                 if (tile.direction === Direction.None) {
+                    tile.state = States.Initial;
                     break;
                 }
 
@@ -145,7 +153,8 @@ class BlobRule {
             
             case States.Wall:
                 return new THREE.Color("#000000");
-
+            case States.Initial:
+                return new THREE.Color("#00ff00");
             default:
                 return new THREE.Color("#ffffff");
         }

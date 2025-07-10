@@ -466,9 +466,14 @@ la france (avec Moore):
 ### Formalisation du modèle
 
 
-Un état $C_{i,j}$ est un couple $(S_{i,j}, D_{i,j})$ où $S_{i,j} \in \{ \text{Blob}, \text{Food}, \text{Path}, \text{RetractingBlob}, \text{FoundFood}, \text{Wall} \}$ et $D_{i,j} \in \{-1,0,1\}^2$.
+Un état $C_{i,j}$ est un couple $(S_{i,j}, D_{i,j})$ où $S_{i,j} \in \{ \text{Blob}, \text{Food}, \text{Path}, \text{RetractingBlob}, \text{FoundFood}, \text{Wall}, \text{Initial} \}$ et $D_{i,j} \in \{-1,0,1\}^2$.
+(en réalité certains couples sont non valides, donc il  a ~)
 
 Les règles sont les suivantes. Par prioritaire, on entend le premier voisin dans l'ordre suivant : Ouest, Est, Sud, Nord, NordEst, NordOuest, SudEst, SouthWest
+
+##### Point initial
+
+Si $S_{i,j} = \text{Blob}$ et que $D_{i,j} = (0,0)$, alors $S_{i,j}$ devient Initial.
 
 ##### Extension du blob
 
@@ -491,7 +496,7 @@ petite précision : on peut vérifier que $(i,j)$ est bien prioritaire parmi les
 
 ##### Extension du chemin
 
-Si la règle précédente n'a pas été appliquée et que $S_{i,j} = \text{Blob}$ et qu'il existe $(k,l)$ dans le voisinage de $(i,j)$ tel que $S_{k,l} = \text{Path}$ et que $(i,j)+D_{k,l} = (k,l)$ alors $S_{i,j}$ devient $\text{Path}$.
+Si ((la règle précédente n'a pas été appliquée et que $S_{i,j} = \text{Blob}$) ou ($S_{i,j} = \text{Empty}$)) et qu'il existe $(k,l)$ dans le voisinage de $(i,j)$ tel que $S_{k,l} = \text{Path}$ et que $(i,j)+D_{k,l} = (k,l)$ alors $S_{i,j}$ devient $\text{Path}$.
 
 ##### Élagage des chemins inutiles
 
