@@ -58,7 +58,7 @@ class BlobRule {
                     if (neighbor.prevState == States.Path) {
                         if (neighbor.direction == i) {
                             tile.state = States.Path;
-                            break;
+                            return true;
                         }
                     }
                     if (neighbor && neighbor.prevState === States.Blob) {
