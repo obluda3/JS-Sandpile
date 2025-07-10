@@ -384,44 +384,7 @@ On peut simuler des fp par des rationels avec une prcéision fixe.
 
 Pour les "choix du voisins ayant le max puis chgt d'état", on étend le rayon de voisinage à 2, et on regarde les voisins de chacun de nos voisins
 
-## Programmation
-
-Intégré des modèles d'automates cellulaires différents sur JS-Sandpile (jeu de la vie, jeu de la vie hexagonal)
-
-## idées en vrac
-
-on pourrait, pour simplifier les chemins regarder à deux voisins.
-
-On a un état $V$ vide, $I$ point initial, $(B_k)_{k \in \{1,2,3\}}$ zone de création de blob, $(N_k)_{k \in \{1,2\}}$ nourriture.
-
-On considère l'état de $(i,j)$
-
-- $V \rightarrow V$
-- $I \rightarrow I$
-- $N_1 \rightarrow N_2$ si $\sum_k C(i,j,B_k) > 0$
-- $N_2 \rightarrow N_2$ 
-- $V \rightarrow B_{k+1} \text{ si } C(i,j,B_k) > 0$
-
-On peut tester une règle "si m'enlever ne détruit aucun lien, on peut m'enlever".
-
-Mathématiquement c'est si
-
-\[ \forall v \in V(i,j), S(v) = B_m \implies C(v, B_m) > 1\]
-
-alors on peut me supprimer
-
-update du lendemain: ça marche pas du tout
-
-on va essayer d'envoyer des vagues depuis la nourriture et depuis le blob et voir si jamais ça touche les deux on solidifie
-
-Peut-être qu'on pourrait représenter chaque état par un truc du style
-
-$(Q, D, Dep)$
-où $Q$ est l'état à proprement parler, $D$ la direction ($\in \{ N,S,W,E\}$), et $Dep$ les chemins auquel il est relié (?).
-
-Vide -> Blob ssi voisin gauche regarde à droite, droite a gauche etc. (priorité NSWE).
-
----
+## idées random 
 
 labyrinthes:
 
@@ -436,16 +399,25 @@ ensuite, pour pruner, une jaune adjacente d'une nourriture devient jaune_chemin 
 
 fonctionne effectivement avec quelques ajustements (+ rayon de 2)
 
+## Modèle proposé
 
-rouge, blanc, gris clair: résidus
-noir: chemin formé
-orange: nourriture
+### Explication
 
-plus ou moins fonctionnel
-![](image-10.png)
+Le modèle a globalement quatre états : l'espace vide, la nourriture, le chemin, et le blob. À partir d'un point initial de Blob, le blob s'étend sur l'espace disponible.
+![](image-13.png)
 
-parfois une forme de periodicité (donc output pas très propre)
-![](image-1.png)
+Lorsqu'il rencontre une source de nourriture, il continue de s'étendre, mais commence à l'intégrer dans son réseau.
+![](image-14.png)
+
+Dans cette situation là, des cases de "Chemin" se forment. Elle se propagent à travers le blob, en suivant le chemin qui a été pris par le blob. 
+
+Les cellules de blob restantes sont "notifiées" de la présence d'une source de nourriture et commencent à disparaître, pour seulement laisser place au réseau (supprimer cette règle ne pose aucune problème, ça permet juste de ne pas avoir un affichage entièrement jaune).
+![](image-15.png)
+
+Et on obtient le chemin désiré.
+![](image-16.png)
+
+#### Quelques exemples
 
 pas tjrs optimal:
 ![](image-9.png)
@@ -463,7 +435,10 @@ labyrinth time:
 la france (avec Moore):
 ![](image-11.png)
 
-### Formalisation du modèle
+wouhou:
+![](image-12.png)
+
+### Formalisation
 
 
 Un état $C_{i,j}$ est un couple $(S_{i,j}, D_{i,j})$ où $S_{i,j} \in \{ \text{Blob}, \text{Food}, \text{Path}, \text{RetractingBlob}, \text{FoundFood}, \text{Wall}, \text{Initial} \}$ et $D_{i,j} \in \{-1,0,1\}^2$.
